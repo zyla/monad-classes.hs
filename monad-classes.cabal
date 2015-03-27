@@ -59,6 +59,8 @@ library
 Test-suite test
   Default-language:
     Haskell2010
+  Extensions:
+    FlexibleContexts
   Type:
     exitcode-stdio-1.0
   Hs-source-dirs:
