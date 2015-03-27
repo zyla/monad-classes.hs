@@ -29,7 +29,7 @@ library
     Control.Monad.Classes.Core,
     Control.Monad.Classes.Effects
   build-depends:
-    base >=4.7,
+    base >=4.7 && <5,
     peano >=0.1,
     mmorph >=1.0.3,
     transformers >=0.2,
