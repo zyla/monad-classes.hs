@@ -1,5 +1,5 @@
 name:                monad-classes
-version:             0.2
+version:             0.3
 synopsis:            more flexible mtl
 -- description:
 homepage:            https://github.com/feuerbach/monad-classes
@@ -30,6 +30,7 @@ library
     Control.Monad.Classes.Effects
   build-depends:
     base >=4.7,
+    peano >=0.1,
     mmorph >=1.0.3,
     transformers >=0.2,
     transformers-compat >=0.3.1,
@@ -55,6 +56,8 @@ library
     GeneralizedNewtypeDeriving,
     RankNTypes
   ghc-options: -Wall
+  if (impl (ghc >=7.10))
+    ghc-options: -fno-warn-unticked-promoted-constructors
 
 Test-suite test
   Default-language:

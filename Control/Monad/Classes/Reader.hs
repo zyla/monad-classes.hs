@@ -7,6 +7,7 @@ import Control.Monad.Trans.Class
 import GHC.Prim (Proxy#, proxy#)
 import Control.Monad.Classes.Core
 import Control.Monad.Classes.Effects
+import Data.Peano
 
 type instance CanDo (R.ReaderT e m) eff = ReaderCanDo e eff
 
@@ -15,7 +16,7 @@ type family ReaderCanDo e eff where
   ReaderCanDo e (EffLocal e) = True
   ReaderCanDo e eff = False
 
-class Monad m => MonadReaderN (n :: Nat) r m where
+class Monad m => MonadReaderN (n :: Peano) r m where
   askN :: Proxy# n -> m r
 
 instance Monad m => MonadReaderN Zero r (R.ReaderT r m) where
@@ -28,11 +29,11 @@ instance Monad m => MonadReaderN Zero r (SS.StateT r m) where
   askN _ = SS.get
 
 instance (MonadTrans t, Monad (t m), MonadReaderN n r m, Monad m)
-  => MonadReaderN (Suc n) r (t m)
+  => MonadReaderN (Succ n) r (t m)
   where
     askN _ = lift $ askN (proxy# :: Proxy# n)
 
-class Monad m => MonadLocalN (n :: Nat) r m where
+class Monad m => MonadLocalN (n :: Peano) r m where
   localN :: Proxy# n -> ((r -> r) -> m a -> m a)
 
 instance Monad m => MonadLocalN Zero r (R.ReaderT r m) where
@@ -53,7 +54,7 @@ instance (Monad m) => MonadLocalN Zero r (SS.StateT r m) where
   localN _ = stateLocal SS.put SS.get
 
 instance (MonadTrans t, Monad (t m), MFunctor t, MonadLocalN n r m, Monad m)
-  => MonadLocalN (Suc n) r (t m)
+  => MonadLocalN (Succ n) r (t m)
   where
     localN _ = \f -> hoist (localN (proxy# :: Proxy# n) f)
 

@@ -26,7 +26,7 @@ module Control.Monad.Classes
     -- ** Effects
   , module Control.Monad.Classes.Effects
     -- ** N-classes
-  , Nat(..)
+  , Peano(..)
   , MonadStateN(..)
   , MonadReaderN(..)
   , MonadLocalN(..)
@@ -49,3 +49,4 @@ import Control.Monad.Classes.Reader
 import Control.Monad.Classes.Writer
 import Control.Monad.Classes.Except
 import Control.Monad.Classes.Exec
+import Data.Peano (Peano (..))

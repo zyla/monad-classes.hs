@@ -3,10 +3,11 @@ module Control.Monad.Classes.Core where
 
 import GHC.Prim (Proxy#, proxy#)
 import Control.Monad.Trans.Class
+import Data.Peano (Peano (..))
 
--- | Peano naturals; used at the type level to denote how far a
--- computation should be lifted
-data Nat = Zero | Suc Nat
+-- Peano naturals; used at the type level to denote how far a computation should be lifted
+-- ... but GHC not promotes type synonyms
+-- type Peano = Peano
 
 -- | @'CanDo' m eff@ describes whether the given effect can be performed in the
 -- monad @m@ (without any additional lifting)
@@ -22,17 +23,17 @@ type family MapCanDo (eff :: k) (stack :: * -> *) :: [Bool] where
 -- of 'True' in a list of booleans
 type family FindTrue
   (bs :: [Bool]) -- results of calling Contains
-  :: Nat
+  :: Peano
   where
   FindTrue (True ': t) = Zero
-  FindTrue (False ': t) = Suc (FindTrue t)
+  FindTrue (False ': t) = Succ (FindTrue t)
 
 -- | @'Find' eff m@ finds the first transformer in a monad transformer
 -- stack that can handle the effect @eff@
 type Find eff (m :: * -> *) =
   FindTrue (MapCanDo eff m)
 
-class MonadLiftN (n :: Nat) m
+class MonadLiftN (n :: Peano) m
   where
     type Down n m :: * -> *
     liftN :: Proxy# n -> Down n m a -> m a
@@ -46,7 +47,7 @@ instance
   ( MonadLiftN n m
   , MonadTrans t
   , Monad m
-  ) => MonadLiftN (Suc n) (t m)
+  ) => MonadLiftN (Succ n) (t m)
   where
-    type Down (Suc n) (t m) = Down n m
+    type Down (Succ n) (t m) = Down n m
     liftN _ = lift . liftN (proxy# :: Proxy# n)

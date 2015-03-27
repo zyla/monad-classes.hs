@@ -13,6 +13,7 @@ import Control.Monad.Classes.Core
 import Control.Monad.Classes.Effects
 import Control.Monad.Classes.Proxied
 import Data.Monoid
+import Data.Peano
 
 type instance CanDo (WL.WriterT w m) eff = WriterCanDo w eff
 type instance CanDo (WS.WriterT w m) eff = WriterCanDo w eff
@@ -22,7 +23,7 @@ type family WriterCanDo w eff where
   WriterCanDo w (EffWriter w) = True
   WriterCanDo w eff = False
 
-class Monad m => MonadWriterN (n :: Nat) w m where
+class Monad m => MonadWriterN (n :: Peano) w m where
   tellN :: Proxy# n -> (w -> m ())
 
 instance (Monad m, Monoid w) => MonadWriterN Zero w (WL.WriterT w m) where
@@ -45,7 +46,7 @@ instance Monad m => MonadWriterN Zero w (CustomWriterT' w m m) where
   tellN _ w = CustomWriterT $ Proxied $ \px -> reflect px w
 
 instance (MonadTrans t, Monad (t m), MonadWriterN n w m, Monad m)
-  => MonadWriterN (Suc n) w (t m)
+  => MonadWriterN (Succ n) w (t m)
   where
     tellN _ = lift . tellN (proxy# :: Proxy# n)
 

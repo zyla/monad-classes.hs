@@ -7,6 +7,7 @@ import Control.Monad.Trans.Class
 import GHC.Prim (Proxy#, proxy#)
 import Control.Monad.Classes.Core
 import Control.Monad.Classes.Effects
+import Data.Peano (Peano (..))
 
 type instance CanDo IO (EffExcept e) = True
 
@@ -18,7 +19,7 @@ type family ExceptCanDo e eff where
   ExceptCanDo e (EffExcept e) = True
   ExceptCanDo e eff = False
 
-class Monad m => MonadExceptN (n :: Nat) e m where
+class Monad m => MonadExceptN (n :: Peano) e m where
   throwN :: Proxy# n -> (e -> m a)
 
 instance Monad m => MonadExceptN Zero e (Exc.ExceptT e m) where
@@ -31,7 +32,7 @@ instance Monad m => MonadExceptN Zero () (Mb.MaybeT m) where
   throwN _ _ = mzero
 
 instance (MonadTrans t, Monad (t m), MonadExceptN n e m, Monad m)
-  => MonadExceptN (Suc n) e (t m)
+  => MonadExceptN (Succ n) e (t m)
   where
     throwN _ = lift . throwN (proxy# :: Proxy# n)
 

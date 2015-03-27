@@ -9,17 +9,18 @@ import Control.Monad.Trans.Class
 import GHC.Prim (Proxy#, proxy#)
 import Control.Monad.Classes.Core
 import Control.Monad.Classes.Effects
+import Data.Peano (Peano (..))
 
 type instance CanDo IO (EffExec IO) = True
 
-class Monad m => MonadExecN (n :: Nat) w m where
+class Monad m => MonadExecN (n :: Peano) w m where
   execN :: Proxy# n -> (w a -> m a)
 
 instance Monad w => MonadExecN Zero w w where
   execN _ = id
 
 instance (MonadTrans t, Monad (t m), MonadExecN n w m, Monad m)
-  => MonadExecN (Suc n) w (t m)
+  => MonadExecN (Succ n) w (t m)
   where
     execN _ = lift . execN (proxy# :: Proxy# n)
 

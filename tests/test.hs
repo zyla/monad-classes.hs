@@ -112,7 +112,7 @@ zoomTests = testCase "Zoom" $ do
 
 liftNTests = testCase "liftN" $ do
   (run $ runReader 'a' $ runReader 'b' $ runReader 'c' $
-    liftN (proxy# :: Proxy# (Suc Zero)) R.ask)
+    liftN (proxy# :: Proxy# (Succ Zero)) R.ask)
   @?= 'b'
 
 
@@ -138,7 +138,7 @@ liftConduitTest = testCase "lift conduit" $
       C.await >>=
         maybe (return ()) (\x -> do lift $ tell [x::Int]; sink)
    in
-    W.execWriter $ hoist (liftN (proxy# :: Proxy# (Suc Zero))) src C.$$ sink
+    W.execWriter $ hoist (liftN (proxy# :: Proxy# (Succ Zero))) src C.$$ sink
   ) @?= [1,2]
   {-
 
