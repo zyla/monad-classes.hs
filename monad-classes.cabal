@@ -6,7 +6,7 @@ homepage:            https://github.com/feuerbach/monad-classes
 license:             MIT
 license-file:        LICENSE
 author:              Roman Cheplyaka <roma@ro-che.info>
-maintainer:          Roman Cheplyaka <roma@ro-che.info>
+maintainer:          M Farkas-Dyck <strake888@gmail.com>
 -- copyright:
 category:            Control
 build-type:          Simple
