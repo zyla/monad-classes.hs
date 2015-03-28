@@ -1,8 +1,8 @@
 name:                monad-classes
-version:             0.3.1.0
+version:             0.3.1.1
 synopsis:            more flexible mtl
 -- description:
-homepage:            https://github.com/feuerbach/monad-classes
+homepage:            https://github.com/strake/monad-classes.hs
 license:             MIT
 license-file:        LICENSE
 author:              Roman Cheplyaka <roma@ro-che.info>
