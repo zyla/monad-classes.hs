@@ -35,7 +35,8 @@ main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "Tests"
-  [ simpleStateTests
+  [ readerTests
+  , simpleStateTests
   , twoStatesTests
   , liftingTest
   , localState
@@ -46,6 +47,28 @@ tests = testGroup "Tests"
   , liftConduitTest
   , mapWriterTest
   ]
+
+readerTests = testGroup "Reader Tests"
+  [ testCase "ask" $
+      let base = 5 :: Integer
+          power = 3 :: Int
+          expected = 125 :: Integer
+      in (runReader power action) base @?= expected
+  , testCase "local ask" $
+      let base = 5 :: Integer
+          power = 2 :: Int
+          altBase = 7 :: Integer
+          altPower = 3 :: Int
+          expected = 174 :: Integer
+          action' = do
+            x <- local (const altBase) action
+            y <- local (const altPower) action
+            pure (x + y)
+      in (runReader power action') base @?= expected
+  ]
+  where
+    f = (^) :: Integer -> Int -> Integer
+    action = f <$> ask <*> ask
 
 simpleStateTests = testGroup "Simple State"
   [ testCase "get" $
