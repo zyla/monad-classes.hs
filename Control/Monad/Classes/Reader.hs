@@ -11,6 +11,8 @@ import Data.Peano
 
 type instance CanDo (R.ReaderT e m) eff = ReaderCanDo e eff
 
+type instance CanDo ((->) e) eff = ReaderCanDo e eff
+
 type family ReaderCanDo e eff where
   ReaderCanDo e (EffReader e) = True
   ReaderCanDo e (EffLocal e) = True
@@ -27,6 +29,9 @@ instance Monad m => MonadReaderN Zero r (SL.StateT r m) where
 
 instance Monad m => MonadReaderN Zero r (SS.StateT r m) where
   askN _ = SS.get
+
+instance MonadReaderN Zero r ((->) r) where
+  askN _ = id
 
 instance (MonadTrans t, Monad (t m), MonadReaderN n r m, Monad m)
   => MonadReaderN (Succ n) r (t m)
@@ -52,6 +57,9 @@ instance (Monad m) => MonadLocalN Zero r (SL.StateT r m) where
 
 instance (Monad m) => MonadLocalN Zero r (SS.StateT r m) where
   localN _ = stateLocal SS.put SS.get
+
+instance MonadLocalN Zero r ((->) r) where
+  localN _ = flip (.)
 
 instance (MonadTrans t, Monad (t m), MFunctor t, MonadLocalN n r m, Monad m)
   => MonadLocalN (Succ n) r (t m)
