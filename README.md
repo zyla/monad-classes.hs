@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/feuerbach/monad-classes.svg?branch=master)](https://travis-ci.org/feuerbach/monad-classes)
+[![Build Status](https://travis-ci.org/strake/monad-classes.hs.svg?branch=master)](https://travis-ci.org/strake/monad-classes.hs)
 
 See [this series of articles][1] for the detailed description and motivation.
 
