@@ -14,7 +14,6 @@ cache:
   directories:
     - $HOME/.cabal/packages
     - $HOME/.cabal/store
-    - $HOME/.ghc
 
 before_cache:
   - rm -fv $HOME/.cabal/packages/hackage.haskell.org/build-reports.log
@@ -51,6 +50,9 @@ matrix:
     - compiler: "ghc-8.0.2"
     # env: TEST=--disable-tests BENCH=--disable-benchmarks
       addons: {apt: {packages: [ghc-ppa-tools,cabal-install-head,ghc-8.0.2], sources: [hvr-ghc]}}
+    - compiler: "ghc-8.2.1"
+    # env: TEST=--disable-tests BENCH=--disable-benchmarks
+      addons: {apt: {packages: [ghc-ppa-tools,cabal-install-head,ghc-8.2.1], sources: [hvr-ghc]}}
 
 before_install:
  - HC=${CC}
@@ -75,7 +77,7 @@ install:
 # any command which exits with a non-zero exit code causes the build to fail.
 script:
  - if [ -f configure.ac ]; then autoreconf -i; fi
- - rm -rf dist/
+ - rm -rf .ghc.environment.* dist/
  - cabal sdist # test that a source-distribution can be generated
  - cd dist/
  - SRCTAR=(${PKGNAME}-*.tar.gz)
@@ -90,14 +92,9 @@ script:
  - cabal new-build -w ${HC} --disable-tests --disable-benchmarks all
  # this builds all libraries and executables (including tests/benchmarks)
  # - rm -rf ./dist-newstyle
- - cabal new-build -w ${HC} ${TEST} ${BENCH} all
 
- # there's no 'cabal new-test' yet, so let's emulate for now
- - TESTS=( $(awk 'tolower($0) ~ /^test-suite / { print $2 }' *.cabal) )
- - if [ "$TEST" != "--enable-tests" ]; then TESTS=(); fi
- - shopt -s globstar;
-   RC=true; for T in ${TESTS[@]}; do echo "== $T ==";
-   if dist-newstyle/build/**/$SRC_BASENAME/**/build/$T/$T; then echo "= $T OK =";
-   else echo "= $T FAILED ="; RC=false; fi; done; $RC
+ # build & run tests
+ - cabal new-build -w ${HC} ${TEST} ${BENCH} all
+ - if [ "x$TEST" = "x--enable-tests" ]; then cabal new-test -w ${HC} ${TEST} all; fi
 
 # EOF
